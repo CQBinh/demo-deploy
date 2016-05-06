@@ -9,7 +9,12 @@ set :pty, true
 set :linked_files, %w{config/database.yml}
 set :linked_dirs, %w{log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/uploads}
 set :keep_releases, 5
-set :rvm_type, :user
-set :rvm_ruby_version, 'ruby-2.2.3'
+# rbenv config
+set :rbenv_type, :user
+set :rbenv_ruby, 'ruby-2.3.0'
+set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} RBENV_VERSION=#{fetch(:rbenv_ruby)} #{fetch(:rbenv_path)}/bin/rbenv exec"
+set :rbenv_map_bins, %w{rake gem bundle ruby rails}
+set :rbenv_roles, :all
+
 set :nginx_config_path, '/etc/nginx/conf.d'
 set :unicorn_env, fetch(:rack_env, fetch(:rails_env, 'production'))
