@@ -14,7 +14,7 @@ set :rails_env, 'production'
 set :bundle_flags, '--no-deployment'
 
 set :ssh_options, {
- keys: %w(~/.ssh/binhcq-asiantech-github.pub),
+ keys: %w(~/.ssh/id_rsa_cqbinh.pub),
  forward_agent: true,
  port: 22
 }
