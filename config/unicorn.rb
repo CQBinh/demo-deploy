@@ -1,4 +1,4 @@
-root = '/var/www/ubuntu/current'
+root = '/var/www/demo_deploy/current'
 working_directory root
 pid "#{root}/tmp/pids/unicorn.pid"
 stderr_path "#{root}/log/unicorn.error.log"
