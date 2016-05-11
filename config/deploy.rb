@@ -1,4 +1,4 @@
-require "bundler/capistrano"
+require 'capistrano/bundler'
 # YOU WILL NEED TO ADD THE LINE FOR RVM HERE
 lock '3.4.0'
 
@@ -26,23 +26,29 @@ set :unicorn_env, fetch(:rack_env, fetch(:rails_env, 'production'))
 namespace :deploy do
   %w[start stop restart].each do |command|
     desc "#{command} unicorn server"
-    task command, roles: :app, except: {no_release: true} do
-      run "/etc/init.d/unicorn_#{application} #{command}"
+    task command do
+      on roles(:app), except: {no_release: true} do
+        run "/etc/init.d/unicorn_#{application} #{command}"
+      end
     end
   end
 
-  task :setup_config, roles: :app do
-    sudo "ln -nfs #{current_path}/config/nginx_#{application}.conf /etc/nginx/sites-enabled/#{application}"
-    sudo "ln -nfs #{current_path}/config/unicorn_init.sh /etc/init.d/unicorn_#{application}"
-    run "mkdir -p #{shared_path}/config"
-    put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
-    puts "Now edit the config files in #{shared_path}."
+  task :setup_config do
+    on roles(:app) do
+      sudo "ln -nfs #{current_path}/config/nginx_#{application}.conf /etc/nginx/sites-enabled/#{application}"
+      sudo "ln -nfs #{current_path}/config/unicorn_init.sh /etc/init.d/unicorn_#{application}"
+      run "mkdir -p #{shared_path}/config"
+      put File.read("config/database.example.yml"), "#{shared_path}/config/database.yml"
+      puts "Now edit the config files in #{shared_path}."
+    end
   end
-  after "deploy:setup", "deploy:setup_config"
 
-  task :symlink_config, roles: :app do
-    run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
-  end
-  after "deploy:finalize_update", "deploy:symlink_config"
+  # task :symlink_config do
+  #   on roles(:app) do
+  #     run "ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml"
+  #   end
+  # end
 end
+# after "deploy:symlink:shared", "deploy:symlink_config"
+after "deploy:symlink:shared", "deploy:setup_config"
 after "deploy", "deploy:cleanup"
