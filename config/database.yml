@@ -11,9 +11,3 @@ development:
 test:
   <<: *default
   database: demo_deploy_test
-
-production:
-  <<: *default
-  database: demo_deploy_production
-  username: demo_deploy
-  password: 1
